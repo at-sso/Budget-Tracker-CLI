@@ -1,0 +1,13 @@
+*
+!/**/
+*.*
+!.vscode
+!**.py
+!**.ini
+!**.json
+!**.md
+!.gitignore
+!license
+json
+log
+__pycache__
