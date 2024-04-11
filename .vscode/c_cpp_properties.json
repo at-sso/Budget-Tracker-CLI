@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Windows",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+            "intelliSenseMode": "windows-gcc-x64",
+            "windowsSdkVersion": "10.0.22000.0",
+            "cppStandard": "gnu++23",
+            "cStandard": "gnu23",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "compilerPath": "/usr/bin/g++-13",
+            "intelliSenseMode": "linux-gcc-x64",
+            "cppStandard": "gnu++23",
+            "cStandard": "gnu23",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}

@@ -28,7 +28,12 @@
     "editor.suggest.insertMode": "replace"
   },
   "files.associations": {
+    "*.hxx": "cpp",
+    ".main.cpp": "cpp",
+    "*.properties": "java-properties",
     "*.ini": "ini",
     "*.log": "log",
+    "stdlib.h": "c",
+    "stdio.h": "c"
   }
 }

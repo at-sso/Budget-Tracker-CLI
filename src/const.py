@@ -30,6 +30,9 @@ JSON_PATH: str = f"{ABSOLUTE_PATH}/json"
 JSON_FILE: str = f"{JSON_PATH}/budget_data.json"
 LOGGER_PATH: str = f"{ABSOLUTE_PATH}/log"
 LOGGER_FILE: str = f"{LOGGER_PATH}/{_dt.now().strftime('%Y-%m-%d-%H-%M-%S')}.log"
+DLL_FILE: str = f"{ABSOLUTE_PATH}/src/bin/random64" + (
+    ".dll" if _os.name == "nt" else ".so"
+)
 
 __mkdirs(
     JSON_PATH,

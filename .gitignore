@@ -3,6 +3,9 @@
 *.*
 !.vscode
 !**.py
+!**.c
+!**.dll
+!**.so
 !**.ini
 !**.json
 !**.md

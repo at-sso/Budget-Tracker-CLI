@@ -1,7 +1,7 @@
-from typing import Set as _Set
+from typing import Set
 
-from .func import *
-from .handler import selector
+from .functions import *
+from .selector_handler import selector
 from .logger import logger
 from .var import var
 
@@ -10,10 +10,10 @@ def main() -> int:
     "Main function"
     logger.info(f"Main function started.")
     logger.was_called(main)
-    _one_to_five: _Set[str] = {"1", "2", "3", "4", "5"}
+    _one_to_five: Set[str] = {"1", "2", "3", "4", "5"}
 
     while True:
-        extras.clear_terminal()
+        clear_terminal()
         prt(
             "Budget Tracking System\n"
             "1. Register Item\n"
@@ -25,7 +25,6 @@ def main() -> int:
         )
 
         selection: str = inp("Enter your choice.")
-        name: str = ""
         if selection == "5":  # Exit main loop
             prt("\nExiting...")
             break
@@ -34,7 +33,7 @@ def main() -> int:
             continue
         else:  # Selection is either 1-4 (str)
             try:
-                selector.get(selection)(name)  # type: ignore
+                selector.get(selection)()  # type: ignore
             except TypeError:
                 var.extra_message = "An error occured."
                 logger.exc(f"The returned type of 'selector' ({selection}) is None.")

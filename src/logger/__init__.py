@@ -82,9 +82,7 @@ class __Logger:
         """
         self.info(
             f"Function {self.__func_at(c)} was called"
-            + f" with the following data:\n{data}"
-            if data != ()
-            else "."
+            + (f" with the following data:\n{data}" if data != () else ".")
         )
 
     def returned(self, c: Callable[..., Any], *args: Any) -> None:
