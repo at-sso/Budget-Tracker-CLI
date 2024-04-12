@@ -36,6 +36,7 @@ class __Logger:
         logger_handler.setFormatter(formatter)
         # Add the handler to the logger
         self.__log.addHandler(logger_handler)
+        self.info("Logger started.")
 
     def __func_at(self, c: Callable[..., Any]) -> str:
         """

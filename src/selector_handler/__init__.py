@@ -12,9 +12,24 @@ from .functions import *
 from src.logger import logger
 
 _TupleStrFloatOrNone = _Tuple[str, float] | None
+_StrOrNone = str | None
+_IfEmpty = _Tuple[str, float, bool, bool]
 
 
-def __if_empty_do_nothing(*msg: str) -> _Tuple[str, float, bool, bool]:
+def __its_empty() -> Any:
+    """
+    The function `__its_empty` sets an additional message in the variable `var.extra_message` indicating
+    that the operation has been canceled. It then returns `None`.
+
+    @param var.extra_message The `var.extra_message` parameter is a string that represents an
+    additional message to be set in the `var.extra_message` variable, indicating the operation's
+    cancellation.
+    """
+    var.extra_message = "Operation canceled."
+    return None
+
+
+def __if_empty_do_nothing(*msg: str) -> _IfEmpty:
     """
     Check if the input string is empty, if it is, return the default value for float,
     if not, return the entered string and the float value.
@@ -29,13 +44,13 @@ def __if_empty_do_nothing(*msg: str) -> _Tuple[str, float, bool, bool]:
     with the entered string, the float value entered, and `False`.
     """
     logger.was_called(__if_empty_do_nothing, msg)
-    default_values: _Tuple[str, float, bool, bool] = "", 0.0, True, True
-    item_does_not_exists: _Tuple[str, float, bool, bool] = "", 0.0, True, False
+    default_values: _IfEmpty = "", 0.0, True, True
+    already_exists: _IfEmpty = "", 0.0, True, False
 
     # Input string.
     name_input: str = inp(msg[0])
-    if item_exists(name_input) == False:
-        return item_does_not_exists
+    if item_exists(name_input):
+        return already_exists
 
     # Check if string is empty.
     if not name_input:
@@ -77,20 +92,9 @@ def __handler(*msg: str, f: _Callable[..., Any]) -> _TupleStrFloatOrNone:
     return f(name, amount)
 
 
-def __its_empty() -> Any:
-    """
-    The function `__its_empty` sets an additional message in the variable `var.extra_message` indicating
-    that the operation has been canceled. It then returns `None`.
-
-    @param var.extra_message The `var.extra_message` parameter is a string that represents an
-    additional message to be set in the `var.extra_message` variable, indicating the operation's
-    cancellation.
-    """
-    var.extra_message = "Operation canceled."
-    return None
-
-
-def __handler_str_only(msg: str, f: _Callable[..., Any]) -> str:
+def __handler_str_only(
+    msg: str, f: _Callable[..., Any], check: bool = True
+) -> _StrOrNone:
     """
     The function `__handler_str_only` prompts the user for input using the `inp` function with the
     provided message. If the input is empty, it calls the `__its_empty` function to handle the empty
@@ -103,20 +107,22 @@ def __handler_str_only(msg: str, f: _Callable[..., Any]) -> str:
     function with the user input.
     """
     name_input: str = inp(msg)
+    if item_exists(name_input) == False and check:
+        return None
     if not name_input:
         return __its_empty()
     return f(name_input)
 
 
-def __register() -> _TupleStrFloatOrNone:
+def __register_handler() -> _TupleStrFloatOrNone:
     """
-    The function `__register` prompts the user to enter an item name and its amount, then registers the item
+    The function `__register_handler` prompts the user to enter an item name and its amount, then registers the item
     using the provided name and amount. If the amount is not numeric, it's converted to a float. Returns
     a tuple containing the item name and its amount.
 
     @return A tuple containing the registered item's name and its amount as a float.
     """
-    logger.was_called(__register)
+    logger.was_called(__register_handler)
     return __handler(
         "\nEnter item name.",
         "\nEnter item amount.",
@@ -124,29 +130,29 @@ def __register() -> _TupleStrFloatOrNone:
     )
 
 
-def __search() -> str | None:
+def __search_handler() -> _StrOrNone:
     """
-    The function `__search` prompts the user to enter an item name to search for. It searches for the item
+    The function `__search_handler` prompts the user to enter an item name to search for. It searches for the item
     with the provided name and returns the name of the item if found.
 
     @return The name of the item if found, otherwise an empty string.
     """
-    logger.was_called(__search)
+    logger.was_called(__search_handler)
     return __handler_str_only(
         "\nEnter item name to search.",
         f=search,
     )
 
 
-def __edit() -> _TupleStrFloatOrNone:
+def __edit_handler() -> _TupleStrFloatOrNone:
     """
-    The function `__edit` prompts the user to enter an item name and its new amount. It edits the item with
+    The function `__edit_handler` prompts the user to enter an item name and its new amount. It edits the item with
     the provided name, updating its amount. If the new amount is not numeric, it's converted to a float.
     Returns a tuple containing the edited item's name and its new amount.
 
     @return A tuple containing the edited item's name and its new amount as a float.
     """
-    logger.was_called(__edit)
+    logger.was_called(__edit_handler)
     return __handler(
         "\nEnter item name to edit.",
         "\nEnter new amount.",
@@ -154,29 +160,29 @@ def __edit() -> _TupleStrFloatOrNone:
     )
 
 
-def __delete() -> str | None:
+def __delete_handler() -> _StrOrNone:
     """
-    The function `__delete` prompts the user to enter an item name to delete. It deletes the item with the
+    The function `__delete_handler` prompts the user to enter an item name to delete. It deletes the item with the
     provided name. Returns the name of the deleted item.
 
     @return The name of the deleted item.
     """
-    logger.was_called(__delete)
+    logger.was_called(__delete_handler)
     return __handler_str_only(
         "\nEnter item name to delete.",
-        f=delete_item,
+        f=delete,
     )
 
 
 selector: _Dict[str, _Callable[[], None]] = {
-    "1": lambda: logger.returned(__register),
-    "2": lambda: logger.returned(__search),
-    "3": lambda: logger.returned(__edit),
-    "4": lambda: logger.returned(__delete),
+    "1": lambda: logger.returned(__register_handler),
+    "2": lambda: logger.returned(__search_handler),
+    "3": lambda: logger.returned(__edit_handler),
+    "4": lambda: logger.returned(__delete_handler),
 }
 """
 The function selector is a dictionary that maps strings to callable functions, each corresponding
 to a specific action. Each key in the dictionary represents a choice, and its associated value is a
-lambda function that takes a string s as input. The lambda functions call different logger functions
-(__register, __search, __edit, __delete) passing the input string s as an argument.
+lambda function. The lambda functions call handler functions (__register_handler, __search_handler, 
+__edit_handler, __delete_handler) passing the input string s as an argument.
 """

@@ -11,7 +11,7 @@ from typing import Callable as _Callable, List as _List, Any as _Any
 
 _ListAny = _List[_Any]
 
-from src.logger import logger as _logger
+from src.logger import logger as logger
 from src.var import var
 
 
@@ -25,7 +25,7 @@ def prt(*s: str, i: str = "") -> None:
     @param i The `i` parameter in the `prt` function is an optional string argument used as a separator
     in the printed output.
     """
-    _logger.was_called(prt, *s, i)
+    logger.was_called(prt, *s, i)
     return print(*s, i)
 
 
@@ -39,7 +39,7 @@ def inp(s: str = "") -> str:
 
     @return str The function `inp` returns the user input as a string.
     """
-    _logger.was_called(inp, s)
+    logger.was_called(inp, s)
     return input(f"{s}\n> ")
 
 
@@ -52,7 +52,7 @@ def clear_terminal() -> int:
     @return The function `clear_terminal` returns an integer representing the exit status of the system
     command execution.
     """
-    _logger.was_called(clear_terminal)
+    logger.was_called(clear_terminal)
     return _os.system("cls" if _os.name == "nt" else "clear")
 
 
@@ -73,12 +73,12 @@ def numeric_only(
     @return The function `numeric_only` returns either an integer or a float value, depending on the
     result of calling the provided instance function with the sanitized input string.
     """
-    _logger.was_called(numeric_only, input_string, instance)
+    logger.was_called(numeric_only, input_string, instance)
     input_string = _re.sub(r"[^0-9.]", "", input_string)
     if input_string == "":
         return var.limit
     try:
         return instance(input_string)
     except ValueError:
-        _logger.exc(c=numeric_only, default=True)
+        logger.exc(c=numeric_only, default=True)
         return var.limit
