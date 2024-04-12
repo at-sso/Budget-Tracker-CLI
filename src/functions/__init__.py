@@ -7,9 +7,7 @@ __all__ = [
 
 import os as _os
 import re as _re
-from typing import Callable as _Callable, List as _List, Any as _Any
-
-_ListAny = _List[_Any]
+from typing import Callable
 
 from src.logger import logger as logger
 from src.var import var
@@ -57,7 +55,7 @@ def clear_terminal() -> int:
 
 
 def numeric_only(
-    input_string: str, instance: _Callable[[str], int | float]
+    input_string: str, instance: Callable[[str], int | float]
 ) -> int | float:
     """
     The function `numeric_only` sanitizes an input string to contain only numeric characters (digits and

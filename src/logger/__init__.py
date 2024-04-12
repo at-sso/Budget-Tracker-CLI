@@ -1,6 +1,6 @@
 import os
 from typing import Any, Callable, List
-import logging as _log
+import logging
 import traceback as tb
 
 import src.const as const
@@ -16,8 +16,8 @@ class __Logger:
         log_file: str = const.LOGGER_FILE
 
         # Start the logger
-        self.__log: _log.Logger = _log.getLogger(__name__)
-        self.__log.setLevel(_log.DEBUG)
+        self.__log: logging.Logger = logging.getLogger(__name__)
+        self.__log.setLevel(logging.DEBUG)
 
         # Delete the oldest files.
         files: List[str] = os.listdir(log_path)
@@ -29,8 +29,8 @@ class __Logger:
                 os.remove(file_path)
 
         # Create a file handler
-        logger_handler = _log.FileHandler(log_file, mode="w")
-        formatter = _log.Formatter(
+        logger_handler = logging.FileHandler(log_file, mode="w")
+        formatter = logging.Formatter(
             "%(asctime)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
         )
         logger_handler.setFormatter(formatter)

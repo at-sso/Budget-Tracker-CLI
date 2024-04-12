@@ -1,19 +1,15 @@
-from typing import (
-    Any,
-    Dict as _Dict,
-    Callable as _Callable,
-    Tuple as _Tuple,
-)
+__all__ = ["selector"]
+
+from typing import Any, Dict, Callable, Tuple
 
 from src.var import var
-
 from src.functions import *
 from .functions import *
 from src.logger import logger
 
-_TupleStrFloatOrNone = _Tuple[str, float] | None
+_TupleStrFloatOrNone = Tuple[str, float] | None
 _StrOrNone = str | None
-_IfEmpty = _Tuple[str, float, bool, bool]
+_IfEmpty = Tuple[str, float, bool, bool]
 
 
 def __its_empty() -> Any:
@@ -29,19 +25,21 @@ def __its_empty() -> Any:
     return None
 
 
-def __if_empty_do_nothing(*msg: str) -> _IfEmpty:
+def __if_empty_do_nothing(*msg: str, skip: bool) -> _IfEmpty:
     """
-    Check if the input string is empty, if it is, return the default value for float,
-    if not, return the entered string and the float value.
+    The function `__if_empty_do_nothing` performs a series of checks on input strings and floats,
+    returning appropriate default values based on the conditions met.
 
-    @param msg The `msg` parameter in the `__if_empty_do_nothing` method is a tuple containing
-    two strings: the first string is used as a prompt to input a name, and the second string
-    is used as a prompt to input a float value.
+    @param msg The `msg` parameter is a variable-length argument that represents the messages
+    received by the function. These messages are used to prompt input from the user.
+    @param skip The `skip` parameter is a boolean flag indicating whether to skip certain
+    checks based on the existence of input data.
 
-    @return The function `__if_empty_do_nothing` returns a tuple containing a string representing
-    a name, a float value, and a boolean flag. If the input string is empty, it returns a default
-    tuple with an empty string, 0.0, and `True`. If the input string is not empty, it returns a tuple
-    with the entered string, the float value entered, and `False`.
+    @return The function `__if_empty_do_nothing` returns a tuple representing either default
+    values or input data based on the conditions met during the checks. If the input string
+    exists and the `skip` flag is `True`, it returns a predefined tuple denoting existence.
+    If the input string is empty, it returns default values. If the input float value is
+    either empty or not a valid float, it also returns default values.
     """
     logger.was_called(__if_empty_do_nothing, msg)
     default_values: _IfEmpty = "", 0.0, True, True
@@ -49,7 +47,7 @@ def __if_empty_do_nothing(*msg: str) -> _IfEmpty:
 
     # Input string.
     name_input: str = inp(msg[0])
-    if item_exists(name_input):
+    if item_exists(name_input) and not skip:
         return already_exists
 
     # Check if string is empty.
@@ -65,24 +63,29 @@ def __if_empty_do_nothing(*msg: str) -> _IfEmpty:
     return name_input, amount_input, False, True
 
 
-def __handler(*msg: str, f: _Callable[..., Any]) -> _TupleStrFloatOrNone:
+def __handler(
+    *msg: str, f: Callable[..., Any], skip_existence: bool = False
+) -> _TupleStrFloatOrNone:
     """
-    The function `__handler` logs the call to the logger with the function name and messages received.
-    It then checks if the provided messages are empty; if so, it calls the `__its_empty` function to
-    handle the empty case. Subsequently, it verifies if the amount matches the limit; if it does, it
-    also calls the `__its_empty` function to handle this condition. Finally, it executes the provided
-    callable function with the received name and amount parameters.
+    The function `__handler` processes input messages and a callback function, performing
+    checks and calling the function if conditions are met.
 
-    @param *msg The `*msg` parameter represents a variable number of string arguments passed
-    to the function.
-    @param f The `f` parameter is a callable function.
+    @param msg The `msg` parameter represents the messages received by the function.
+    @param f The `f` parameter is a callable function that the handler executes with
+    appropriate input parameters.
+    @param skip_existence The `skip_existence` parameter is a boolean flag indicating
+    whether to skip existence checks for input data.
 
-    @return The function returns a tuple containing strings and floats representing the result
-    of executing the provided callable function, after handling possible empty message scenarios.
+    @return The function `__handler` returns a tuple representing either the result of
+    calling the provided function or `None` based on the conditions met during the checks.
+    If the input name does not exist, it returns `None`. If the input is empty or reaches
+    a certain limit, it returns a predefined tuple denoting emptiness.
     """
     logger.was_called(__handler, msg)
 
-    name, amount, is_empty, name_exists = __if_empty_do_nothing(*msg)
+    name, amount, is_empty, name_exists = __if_empty_do_nothing(
+        *msg, skip=skip_existence
+    )
     if not name_exists:
         return None
     if is_empty:
@@ -93,7 +96,7 @@ def __handler(*msg: str, f: _Callable[..., Any]) -> _TupleStrFloatOrNone:
 
 
 def __handler_str_only(
-    msg: str, f: _Callable[..., Any], check: bool = True
+    msg: str, f: Callable[..., Any], check: bool = True
 ) -> _StrOrNone:
     """
     The function `__handler_str_only` prompts the user for input using the `inp` function with the
@@ -154,9 +157,7 @@ def __edit_handler() -> _TupleStrFloatOrNone:
     """
     logger.was_called(__edit_handler)
     return __handler(
-        "\nEnter item name to edit.",
-        "\nEnter new amount.",
-        f=edit,
+        "\nEnter item name to edit.", "\nEnter new amount.", f=edit, skip_existence=True
     )
 
 
@@ -174,7 +175,7 @@ def __delete_handler() -> _StrOrNone:
     )
 
 
-selector: _Dict[str, _Callable[[], None]] = {
+selector: Dict[str, Callable[[], None]] = {
     "1": lambda: logger.returned(__register_handler),
     "2": lambda: logger.returned(__search_handler),
     "3": lambda: logger.returned(__edit_handler),

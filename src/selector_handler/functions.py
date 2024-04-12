@@ -112,8 +112,11 @@ def edit(name: str, new_amount: float) -> None:
     logger.was_called(edit, name, new_amount)
     for item in __data:
         item["amount"] = new_amount
+    if item_exists(name):
         __save_data(__data)
-        var.extra_message = f"Item '{name}' edited successfully."
+        var.extra_message = (
+            f"Item '{name}' edited successfully. New amount: '{new_amount}'."
+        )
 
 
 def delete(name: str) -> None:
