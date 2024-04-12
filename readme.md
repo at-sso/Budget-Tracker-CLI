@@ -7,7 +7,7 @@ This project is a simple budget tracking system implemented in Python. It allows
 This project relies on two external components:
 
 - **Python:** The core functionality is written in Python. Ensure you have Python 3.10 or later installed on your system. ([https://www.python.org/downloads/](https://www.python.org/downloads/))
-- **C Compiler:** The `random64.c` file generates random numbers using a shared library. You'll need a C compiler like GCC to build it.
+- **C Compiler (Optional):** The `random64.c` file generates random numbers using a shared library. You'll need a C compiler like GCC to build it.
 
 **Important Note:** The provided build commands for the shared library are specific to Windows 10 and Ubuntu 22.04 on WSL. The build process might differ slightly depending on your operating system and compiler.
 
