@@ -14,6 +14,7 @@ _DataList = List[Dict[str, Union[str, float]]]
 import src.const as const
 from src.var import var
 from src.logger import logger as logger
+from src.messages import *
 
 
 def __load_data() -> _DataList:
@@ -55,7 +56,7 @@ def __save_data(data: _DataList) -> None:
 __data: _DataList = __load_data()
 
 
-def item_exists(name: str) -> bool:
+def item_exists(s: str) -> bool:
     """
     The function `item_exists` checks if an item with the given name exists in the data. If found,
     it returns True; otherwise, it returns False and sets an extra message accordingly.
@@ -65,12 +66,12 @@ def item_exists(name: str) -> bool:
 
     @return The function returns a boolean value indicating whether the item exists in the data or not.
     """
-    logger.was_called(item_exists, name)
+    logger.was_called(item_exists, s)
     for item in __data:
-        if item["name"] == name:
-            var.extra_message = f"Item '{name}' already exists."
+        if item["name"] == s:
+            var.extra_message = PRT_INIT_ITEM_ALREADY_EXISTS(s)
             return True
-    var.extra_message = f"Item '{name}' not found."
+    var.extra_message = PRT_INIT_ITEM_NOT_FOUND(s)
     return False
 
 
@@ -84,7 +85,7 @@ def register(name: str, amount: float) -> None:
     logger.was_called(register, name, amount)
     __data.append({"name": name, "amount": amount})
     __save_data(__data)
-    var.extra_message = f"Item '{name}' registered successfully."
+    var.extra_message = PRT_INIT_REGISTER_REGISTERED_SUCCESSFULLY(name)
 
 
 def search(name: str) -> None:
@@ -95,9 +96,7 @@ def search(name: str) -> None:
     """
     logger.was_called(search, name)
     for item in __data:
-        var.extra_message = (
-            f"Found item:\nName: '{item['name']}', Amount: '{item['amount']}'."
-        )
+        var.extra_message = PRT_INIT_SEARCH_ITEM_FOUND((item["name"], item["amount"]))
         return
 
 
@@ -114,9 +113,7 @@ def edit(name: str, new_amount: float) -> None:
         item["amount"] = new_amount
     if item_exists(name):
         __save_data(__data)
-        var.extra_message = (
-            f"Item '{name}' edited successfully. New amount: '{new_amount}'."
-        )
+        var.extra_message = PRT_INIT_EDIT_ITEM_EDITED_SUCCESSFULLY((name, new_amount))
 
 
 def delete(name: str) -> None:
@@ -129,4 +126,4 @@ def delete(name: str) -> None:
     logger.was_called(delete)
     __data[:] = [item for item in __data if item["name"] != name]
     __save_data(__data)
-    var.extra_message = f"Item(s) '{name}' deleted successfully."
+    var.extra_message = PRT_INIT_DELETED_ITEM_DELETED_SUCCESSFULLY(name)

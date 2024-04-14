@@ -1,27 +1,28 @@
 __all__ = ["selector"]
 
-from typing import Any, Dict, Callable, Tuple
+from typing import Any, Dict, Callable, Literal, Tuple, Set
 
 from src.var import var
 from src.functions import *
 from .functions import *
 from src.logger import logger
+from src.messages import *
 
 _TupleStrFloatOrNone = Tuple[str, float] | None
 _StrOrNone = str | None
 _IfEmpty = Tuple[str, float, bool, bool]
 
 
+def __empty(s: str) -> bool:
+    return True if s == "" else False
+
+
 def __its_empty() -> Any:
     """
     The function `__its_empty` sets an additional message in the variable `var.extra_message` indicating
     that the operation has been canceled. It then returns `None`.
-
-    @param var.extra_message The `var.extra_message` parameter is a string that represents an
-    additional message to be set in the `var.extra_message` variable, indicating the operation's
-    cancellation.
     """
-    var.extra_message = "Operation canceled."
+    var.extra_message = PRT_OPERATION_CANCELED
     return None
 
 
@@ -47,6 +48,8 @@ def __if_empty_do_nothing(*msg: str, skip: bool) -> _IfEmpty:
 
     # Input string.
     name_input: str = inp(msg[0])
+    if __empty(name_input):
+        return default_values
     if item_exists(name_input) and not skip:
         return already_exists
 
@@ -58,7 +61,7 @@ def __if_empty_do_nothing(*msg: str, skip: bool) -> _IfEmpty:
     amount_input: float = numeric_only(inp(msg[1]), float)
 
     # Check if float value is empty or not a valid float.
-    if amount_input == 0.0:
+    if amount_input == var.limit:
         return default_values
     return name_input, amount_input, False, True
 
@@ -110,6 +113,8 @@ def __handler_str_only(
     function with the user input.
     """
     name_input: str = inp(msg)
+    if __empty(name_input):
+        return __its_empty()
     if item_exists(name_input) == False and check:
         return None
     if not name_input:
@@ -127,8 +132,8 @@ def __register_handler() -> _TupleStrFloatOrNone:
     """
     logger.was_called(__register_handler)
     return __handler(
-        "\nEnter item name.",
-        "\nEnter item amount.",
+        INP_INIT_REGISTER_HANDLER_ITEM_NAME,
+        INP_INIT_REGISTER_HANDLER_ITEM_AMOUNT,
         f=register,
     )
 
@@ -142,7 +147,7 @@ def __search_handler() -> _StrOrNone:
     """
     logger.was_called(__search_handler)
     return __handler_str_only(
-        "\nEnter item name to search.",
+        INP_INIT_SEARCH_HANDLER_ITEM_TO_SEARCH,
         f=search,
     )
 
@@ -156,8 +161,12 @@ def __edit_handler() -> _TupleStrFloatOrNone:
     @return A tuple containing the edited item's name and its new amount as a float.
     """
     logger.was_called(__edit_handler)
+
     return __handler(
-        "\nEnter item name to edit.", "\nEnter new amount.", f=edit, skip_existence=True
+        INP_INIT_EDIT_HANDLER_ITEM_TO_EDIT,
+        INP_INIT_EDIT_HANDLER_NEW_ITEM_AMOUNT,
+        f=edit,
+        skip_existence=True,
     )
 
 
@@ -170,20 +179,46 @@ def __delete_handler() -> _StrOrNone:
     """
     logger.was_called(__delete_handler)
     return __handler_str_only(
-        "\nEnter item name to delete.",
+        INP_INIT_DELETED_HANDLER_ITEM_TO_DELETE,
         f=delete,
     )
 
 
-selector: Dict[str, Callable[[], None]] = {
+__selector_values: Set[str] = {"1", "2", "3", "4"}
+
+__selector_handler: Dict[str, Callable[[], None]] = {
     "1": lambda: logger.returned(__register_handler),
     "2": lambda: logger.returned(__search_handler),
     "3": lambda: logger.returned(__edit_handler),
     "4": lambda: logger.returned(__delete_handler),
 }
 """
-The function selector is a dictionary that maps strings to callable functions, each corresponding
+The function __selector_handler is a dictionary that maps strings to callable functions, each corresponding
 to a specific action. Each key in the dictionary represents a choice, and its associated value is a
 lambda function. The lambda functions call handler functions (__register_handler, __search_handler, 
 __edit_handler, __delete_handler) passing the input string s as an argument.
 """
+
+
+def selector(s: str) -> Literal[False]:
+    """
+    The function `selector` checks if a given string `s` is in the '__selector_values' Set.
+    If it is, it attempts to call a corresponding handler function from the '__selector_handler'
+    dictionary. If a `TypeError` exception occurs during this process, it logs an error message
+    indicating that the returned type of the handler is None, and sets 'var.extra_message' to
+    'PRT_ERROR'. If the string `s` is not found in the dictionary, it sets 'var.extra_message'
+    to 'PRT_INVALID_CHOICE'.
+
+    @param s The `s` parameter is a string that is checked against the '__selector_values' dictionary.
+    @return The function returns False in all cases.
+    """
+    if s in __selector_values:
+        try:
+            __selector_handler.get(s, lambda *args: False)()
+        except TypeError:
+            var.extra_message = PRT_ERROR
+            logger.exc(f"The returned type of '{__selector_handler}' is None.")
+        finally:
+            return False
+    var.extra_message = PRT_INVALID_CHOICE(s)
+    return False

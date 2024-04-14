@@ -95,7 +95,7 @@ class __Logger:
         """
         val: Any = None
         if args:
-            val = c(args)
+            val = c(*args)
         else:
             val = c()
         self.info(

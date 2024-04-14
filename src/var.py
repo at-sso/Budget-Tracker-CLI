@@ -27,7 +27,7 @@ def _random64() -> float:
         MAX_UNICODE: int = sys.maxunicode
         # Seed the random number generator with current time.
         random.seed(time.time() + MAX_UNICODE / 0.9 - (MAX_UNICODE / 20))
-        # Generate a random number between 0 and INT32_MAX (sys.maxsize).
+        # Generate a random number between 0 and INT32_MAX (sys.maxunicode).
         random_number: int = random.randint(0, MAX_UNICODE)
         # Adjust the range to the desired min-max values.
         range_value: float = MAX_UNICODE - (MAX_UNICODE / 2) + MAX_UNICODE / 2

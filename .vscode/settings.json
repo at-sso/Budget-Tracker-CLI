@@ -7,6 +7,14 @@
   "python.analysis.autoImportCompletions": true,
   "python.analysis.inlayHints.variableTypes": true,
   "python.analysis.useLibraryCodeForTypes": true,
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportUnknownParameterType": false,
+    "reportUnknownArgumentType": false,
+    "reportUnknownLambdaType": false,
+    "reportUnknownVariableType": false,
+    "reportUnknownMemberType": false,
+    "reportMissingTypeStubs": false,
+  },
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },

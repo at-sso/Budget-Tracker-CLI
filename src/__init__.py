@@ -1,40 +1,22 @@
-from typing import Set
-
 from .functions import *
-from .selector_handler import selector
+from .selector_handler import *
 from .logger import logger
 from .var import var
+from .messages import *
 
 
 def main() -> int:
     "Main function"
     logger.info(f"Main function started.")
     logger.was_called(main)
-    _one_to_five: Set[str] = {"1", "2", "3", "4", "5"}
 
     while True:
         clear_terminal()
-        prt(
-            "Budget Tracking System\n"
-            "1. Register Item\n"
-            "2. Search Item\n"
-            "3. Edit Item\n"
-            "4. Delete Item\n"
-            "5. Exit\n",
-            i=f"{var.extra_message}\n",
-        )
+        prt(PRT_MAIN_MENU, i=f"{var.extra_message}\n")
 
-        selection: str = inp("Enter your choice.")
-        if selection == "5":  # Exit main loop
+        user_selection: str = inp(INP_ENTER_MAIN_MENU_CHOICE)
+        if selector(user_selection) or user_selection == "5":
             prt("\nExiting...")
             break
-        if selection not in _one_to_five:  # Invalid choice
-            var.extra_message = "Invalid choice. Please try again."
-            continue
-        else:  # Selection is either 1-4 (str)
-            try:
-                selector.get(selection)()  # type: ignore
-            except TypeError:
-                var.extra_message = "An error occured."
-                logger.exc(f"The returned type of 'selector' ({selection}) is None.")
+
     return 0
