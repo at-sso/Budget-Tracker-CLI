@@ -62,4 +62,4 @@ These settings ensure compatibility with Python version 3.10, enable pretty prin
 
 ### License
 
-This project is licensed under the **[GPL-3.0 license](license)**.
+This project is licensed under the **[MIT license](license)**.
